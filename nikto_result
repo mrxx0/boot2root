@@ -1,0 +1,18 @@
+nikto -h 192.168.56.102
+- Nikto v2.1.5
+---------------------------------------------------------------------------
++ Target IP:          192.168.56.102
++ Target Hostname:    192.168.56.102
++ Target Port:        80
++ Start Time:         2021-10-11 14:55:04 (GMT2)
+---------------------------------------------------------------------------
++ Server: Apache/2.2.22 (Ubuntu)
++ Server leaks inodes via ETags, header found with file /, inode: 13650, size: 1025, mtime: 0x5218c3c475880
++ The anti-clickjacking X-Frame-Options header is not present.
++ Allowed HTTP Methods: OPTIONS, GET, HEAD, POST 
++ OSVDB-3233: /icons/README: Apache default file found.
++ 6544 items checked: 0 error(s) and 4 item(s) reported on remote host
++ End Time:           2021-10-11 14:55:08 (GMT2) (4 seconds)
+---------------------------------------------------------------------------
++ 1 host(s) tested
+
