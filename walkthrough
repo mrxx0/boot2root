@@ -59,3 +59,10 @@ Let's try with the one from the email.
 It works ! We can connect to the phpmyadmin as root.
 
 root : Fg-'kKXBj87E:aJ$
+
+Now logged as root on the phpmyadmin page, we can test some SQL command.
+
+
+SELECT @ @version
+5.5.44-0ubuntu0.12.04.1
+
