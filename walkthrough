@@ -24,6 +24,38 @@ And it works ! We can login on lmezard's account with the password : !q\]Ej?*5K5
 Exploring the rest of the forum logged as lmezard we discovered that in our profile page, we have an email !
 
 This email is : laurie@borntosec.net
-In the user area, we also discovered a little email icon next to the admin account, this means we can reach to him or at least have his address !
 
-Hum it's the same address, this means Laurie is lmezard and also admin.
+So now we can login on the forum.
+With dirb we found that there is a webmail service running on the machine : Squirrel Mail
+
+Accessing https://[IP]/webmail
+
+We need to input a username and a password.
+
+Let's try the same username + password from the forum.
+We are now connected on the email service and there are 2 emails on the account.
+
+The first one'subject is "very interesting!!!" but the content of the email is not.
+However the last one received is waaaaaaaay more interesting.
+
+Here is the email :
+
+"Subject:  	DB Access
+From:  	qudevide@mail.borntosec.net
+Date:  	Thu, October 8, 2015 11:25 pm
+To:  	laurie@borntosec.net
+Priority:  	Normal
+
+Hey Laurie,
+
+You cant connect to the databases now. Use root/Fg-'kKXBj87E:aJ$
+
+Best regards."
+
+There is a login/password to connect to the database ?
+With dirb we knew there is a phpmyadmin page, but we didn't have the username and password to log in.
+Let's try with the one from the email.
+
+It works ! We can connect to the phpmyadmin as root.
+
+root : Fg-'kKXBj87E:aJ$
