@@ -113,3 +113,80 @@ ftp> ls
 ftp>
 
 And now we can get the README and fun files.
+
+fun isn't a file, it's a hidden tar
+Renaming in fun.tar and now we can extract its content,
+resulting in a ft_fun directory with 739 .pcap files
+
+Looking at few files we found that it looks like C code
+but splitted in hundreads of files.
+But what does it do ? Let's find the main function
+
+int main() {
+	printf("M");
+	printf("Y");
+	printf(" ");
+	printf("P");
+	printf("A");
+	printf("S");
+	printf("S");
+	printf("W");
+	printf("O");
+	printf("R");
+	printf("D");
+	printf(" ");
+	printf("I");
+	printf("S");
+	printf(":");
+	printf(" ");
+	printf("%c",getme1());
+	printf("%c",getme2());
+	printf("%c",getme3());
+	printf("%c",getme4());
+	printf("%c",getme5());
+	printf("%c",getme6());
+	printf("%c",getme7());
+	printf("%c",getme8());
+	printf("%c",getme9());
+	printf("%c",getme10());
+	printf("%c",getme11());
+	printf("%c",getme12());
+	printf("\n");
+	printf("Now SHA-256 it and submit");
+}
+
+That's interesting. We have the last 5 char of the password.
+Because we can reach functions getme8() to getmet12().
+It means we have : 
+
+XXXXXXXwnage
+
+Grepping on the content of all the files to look for 'return'
+
+We get :
+
+cat merge | grep 'return'
+//file483	return 'a';
+//file697	return 'I';
+	return 'w';
+	return 'n';
+	return 'a';
+	return 'g';
+	return 'e';
+//file161	return 'e';
+//file252	return 't';
+//file163	return 'p';
+//file640	return 'r';
+//file3	return 'h';
+
+Our first past of the password contains aIetrh
+
+With a little bit of swap and guessing the password that got out was
+
+Iheartpwnage
+
+We have to hash this with SHA-256 and we should be able to log as laurie on the machine.
+
+330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
+
+We are now logged as laurie on boot2root
