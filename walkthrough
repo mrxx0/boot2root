@@ -201,4 +201,10 @@ We can access the phase_1 of the program with a breakpoint,
 at phase_1 + 26 and change the value of eax to 0 (set to 1).
 This let us pass and defuse the phase 1.
 
+Now for phase_2, again the program waits for a user entry
+Adding a breakpoint at phase_2 + 46 and phase_2 + 68 
+we can understand that we need to give 6 parameters to the function
+It's a factorial series of 6
+1 2 6 24 120 720
+
 
