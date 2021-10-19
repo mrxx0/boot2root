@@ -190,3 +190,15 @@ We have to hash this with SHA-256 and we should be able to log as laurie on the 
 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 
 We are now logged as laurie on boot2root
+
+In the home directory there is a readme and an executable called
+bomb.
+Executing it, it waits for the user to give a value and read the stin.
+
+Thanks to gdb, we can explore in details and we discoered that there
+are 6 phase.
+We can access the phase_1 of the program with a breakpoint,
+at phase_1 + 26 and change the value of eax to 0 (set to 1).
+This let us pass and defuse the phase 1.
+
+
