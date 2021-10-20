@@ -201,10 +201,418 @@ We can access the phase_1 of the program with a breakpoint,
 at phase_1 + 26 and change the value of eax to 0 (set to 1).
 This let us pass and defuse the phase 1.
 
+The string is "Public speaking is very easy."
+
 Now for phase_2, again the program waits for a user entry
 Adding a breakpoint at phase_2 + 46 and phase_2 + 68 
 we can understand that we need to give 6 parameters to the function
 It's a factorial series of 6
 1 2 6 24 120 720
+
+For phase_3 using ghidra we can decompile the function :
+
+
+void phase_3(char *param_1)
+
+{
+  int iVar1;
+  char cVar2;
+  uint local_10;
+  char local_9;
+  int local_8;
+  
+  iVar1 = sscanf(param_1,"%d %c %d",&local_10,&local_9,&local_8);	// Wait for 3 parameters : an int, a char and an int
+  if (iVar1 < 3) {													// I less than 3 variables -> explode
+    explode_bomb();
+  }
+  switch(local_10) {												// check on first parameter : int
+  case 0:
+    cVar2 = 'q';													// if != 0 q 777 -> explode
+    if (local_8 != 0x309) {
+      explode_bomb();
+    }
+    break;
+ case 1:															// if != 1 b 214 -> explode
+    cVar2 = 'b';
+    if (local_8 != 0xd6) {
+      explode_bomb();
+    }
+    break;
+  case 2:
+    cVar2 = 'b';													// if != 2 b 755 -> explode
+    if (local_8 != 0x2f3) {
+      explode_bomb();
+    }
+    break;
+  case 3:
+    cVar2 = 'k';													// if != 3 k 251 -> explode
+    if (local_8 != 0xfb) {
+      explode_bomb();
+    }
+    break;
+  case 4:
+    cVar2 = 'o';													// if != 4 o 160 -> explode
+    if (local_8 != 0xa0) {
+      explode_bomb();
+    }
+    break;
+  case 5:
+    cVar2 = 't';													// if != 5 t 458 -> explode
+    if (local_8 != 0x1ca) {
+      explode_bomb();
+    }
+    break;
+  case 6:															// if != 6 v 780 -> explode
+    cVar2 = 'v';
+    if (local_8 != 0x30c) {
+      explode_bomb();
+    }
+    break;
+  case 7:															// if != 7 b 524 -> explode
+    cVar2 = 'b';
+    if (local_8 != 0x20c) {
+      explode_bomb();
+    }
+    break;
+  default:															// if x -> explode
+    cVar2 = 'x';
+    explode_bomb();
+  }
+  if (cVar2 != local_9) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+
+So there are many solutions to choose from.
+
+
+Here is phase_4 :
+
+
+void phase_4(char *param_1)
+
+{
+  int iVar1;
+  int local_8;
+
+  iVar1 = sscanf(param_1,"%d",&local_8);
+  if ((iVar1 != 1) || (local_8 < 1)) {
+    explode_bomb();
+  }
+  iVar1 = func4(local_8);
+  if (iVar1 != 0x37) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+
+We need to give 1 parameter, an int and it must be positive.
+
+This int is passed to a function func4 and the result exepected is 0x37 = 55
+
+What is func4 ? :
+
+int func4(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+
+  if (param_1 < 2) {
+    iVar2 = 1;
+  }
+  else {
+    iVar1 = func4(param_1 + -1);
+    iVar2 = func4(param_1 + -2);
+    iVar2 = iVar2 + iVar1;
+  }
+  return iVar2;
+}
+
+
+We can create a C file to compile it and see the result.
+
+
+With this C file :
+
+#include <stdlib.h>
+#include <stdio.h>
+
+int func4(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  if (param_1 < 2) {
+    iVar2 = 1;
+  }
+  else {
+    iVar1 = func4(param_1 + -1);
+    iVar2 = func4(param_1 + -2);
+    iVar2 = iVar2 + iVar1;
+  }
+  return iVar2;
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != 2)
+		return (0);
+	int param_1 = atoi(argv[1]);
+	int ret = func4(param_1);
+
+	printf("%d\n", ret);
+}
+
+
+We can find the solution :
+
+
+
+➜  born2root git:(master) ✗ vim phase_4.c
+➜  born2root git:(master) ✗ gcc phase_4.c
+➜  born2root git:(master) ✗ ./a.out
+➜  born2root git:(master) ✗ ./a.out 2
+2
+➜  born2root git:(master) ✗ ./a.out 5
+8
+➜  born2root git:(master) ✗ ./a.out 10
+89
+➜  born2root git:(master) ✗ ./a.out 9
+55
+
+The answer should be 9
+
+
+Phase_5 :
+
+
+void phase_5(int param_1)
+
+{
+  int iVar1;
+  undefined local_c [6];
+  undefined local_6;
+
+  iVar1 = string_length(param_1);
+  if (iVar1 != 6) {
+    explode_bomb();
+  }
+  iVar1 = 0;
+  do {
+    local_c[iVar1] = (&array.123)[(char)(*(byte *)(iVar1 + param_1) & 0xf)];
+    iVar1 = iVar1 + 1;
+  } while (iVar1 < 6);
+  local_6 = 0;
+  iVar1 = strings_not_equal(local_c,"giants");
+  if (iVar1 != 0) {
+    explode_bomb();
+  }
+  return;
+}
+
+
+
+we can see that the phase_5 is taking one parameter, a string 
+This string must have a lenth of 6 char or the bomb explode.
+Looking at array.123 it is a string :
+
+                             array.123                                       XREF[2]:     phase_5:08048d52(*),
+                                                                                          phase_5:08048d5f(R)
+        0804b220 69              ??         69h    i
+        0804b221 73              ??         73h    s
+        0804b222 72              ??         72h    r
+        0804b223 76              ??         76h    v
+        0804b224 65              ??         65h    e
+        0804b225 61              ??         61h    a
+        0804b226 77              ??         77h    w
+        0804b227 68              ??         68h    h
+        0804b228 6f              ??         6Fh    o
+        0804b229 62              ??         62h    b
+        0804b22a 70              ??         70h    p
+        0804b22b 6e              ??         6Eh    n
+        0804b22c 75              ??         75h    u
+        0804b22d 74              ??         74h    t
+        0804b22e 66              ??         66h    f
+        0804b22f 67              ??         67h    g
+
+
+There is an operation of the string parameter, and then a comparaison with
+"giants" if in the output our string is equal to giants it's good.
+
+With this C code :
+
+
+#include <stdio.h>
+#include <string.h>
+
+void phase_5(char *line) 
+{
+    if (strlen(line) != 6)
+	{
+		printf("Bad length\n");
+		return ;
+	}
+	int i = 0;
+    char *string = "isrveawhobpnutfg";
+    while (i < 6) {
+        line[i] = string[line[i] & 0xf];
+		printf("%s\n", line);
+        i++;
+    }
+		printf("\n%s\n", line);
+	if (strcmp(line, "giants") != 0)
+	{
+		printf("Bad input\n");
+		return;
+    }
+    return;
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != 2)
+		return (0);
+	phase_5(argv[1]);
+}
+
+
+We can deduce the input to get "giants" as an output :
+
+➜  born2root git:(master) ✗ ./a.out abcdef
+sbcdef
+srcdef
+srvdef
+srveef
+srveaf
+srveaw
+
+srveaw
+Bad input
+➜  born2root git:(master) ✗ ./a.out ghijkl
+hhijkl
+hoijkl
+hobjkl
+hobpkl
+hobpnl
+hobpnu
+
+hobpnu
+Bad input
+➜  born2root git:(master) ✗ ./a.out mnopqr
+tnopqr
+tfopqr
+tfgpqr
+tfgiqr
+tfgisr
+tfgisr
+
+tfgisr
+Bad input
+➜  born2root git:(master) ✗ ./a.out stuvwx
+vtuvwx
+veuvwx
+veavwx
+veawwx
+veawhx
+veawho
+
+veawho
+Bad input
+➜  born2root git:(master) ✗ ./a.out yzyzyz
+bzyzyz
+bpyzyz
+bpbzyz
+bpbpyz
+bpbpbz
+bpbpbp
+
+bpbpbp
+Bad input
+➜  born2root git:(master) ✗ ./a.out opekmq
+gpekmq
+giekmq
+giakmq
+gianmq
+giantq
+giants
+
+giants
+
+
+Solution is opekmq
+
+Phase_6 :
+
+
+
+
+void phase_6(undefined4 param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  int *piVar3;
+  int iVar4;
+  undefined1 *local_38;
+  int *local_34 [6];
+  int local_1c [6];
+
+  local_38 = node1;
+  read_six_numbers(param_1,local_1c);
+  iVar4 = 0;
+  do {
+    if (5 < local_1c[iVar4] - 1U) {
+      explode_bomb();
+    }
+    iVar2 = iVar4 + 1;
+    if (iVar2 < 6) {
+      do {
+        if (local_1c[iVar4] == local_1c[iVar2]) {
+          explode_bomb();
+        }
+        iVar2 = iVar2 + 1;
+      } while (iVar2 < 6);
+    }
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 6);
+  iVar4 = 0;
+  do {
+    iVar2 = 1;
+    piVar3 = (int *)local_38;
+    if (1 < local_1c[iVar4]) {
+      do {
+        piVar3 = (int *)piVar3[2];
+        iVar2 = iVar2 + 1;
+      } while (iVar2 < local_1c[iVar4]);
+    }
+    local_34[iVar4] = piVar3;
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 6);
+  iVar4 = 1;
+  piVar3 = local_34[0];
+  do {
+    piVar1 = local_34[iVar4];
+    piVar3[2] = (int)piVar1;
+    iVar4 = iVar4 + 1;
+    piVar3 = piVar1;
+  } while (iVar4 < 6);
+  piVar1[2] = 0;
+  iVar4 = 0;
+  do {
+    if (*local_34[0] < *(int *)local_34[0][2]) {
+      explode_bomb();
+    }
+    local_34[0] = (int *)local_34[0][2];
+    iVar4 = iVar4 + 1;
+  } while (iVar4 < 5);
+  return;
+}
 
 
