@@ -623,6 +623,16 @@ We can now log as Thor with :
 
 Publicspeakingisveryeasy.126241207201b2149opekmq426315
 
+In Thor's home there is a readme and a turtle.py file :
+
+thor@BornToSecHackMe:~$ cat README
+Finish this challenge and use the result as password for 'zaz' user.
+
+The turtle script contains instructions. If we execute them in the right order
+it opens a window and draw : S L A S H
+
+If we use the message digest algorithm md5 we have the password of zaz:
+
 
 zaz password : 646da671ca01bb5d84dbb5fb2238dc8e
 
