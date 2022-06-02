@@ -1,5 +1,5 @@
-Enter in grub's recovery mode in virtualbox
-Spamming shift key at boot
+Enter in grub's recovery mode in virtualbox by pressing shift key at boot until
+the boot sequence appears.
 
 init boot sequence with :
 
