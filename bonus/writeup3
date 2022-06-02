@@ -1,0 +1,9 @@
+Enter in grub's recovery mode in virtualbox
+Spamming shift key at boot
+
+init boot sequence with :
+
+live init=/bin/sh
+
+This will launch a bash with root access.
+From there we can access the entire system as root and launch whoami / id
